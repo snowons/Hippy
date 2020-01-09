@@ -118,6 +118,11 @@ class ViewNode {
     childNode.nextSibling = referenceNode;
     childNode.prevSibling = this.childNodes[index - 1];
 
+    // update previous node's nextSibling to prevent patch bug
+    if (this.childNodes[index - 1]) {
+      this.childNodes[index - 1].nextSibling = childNode;
+    }
+
     referenceNode.prevSibling = childNode;
     this.childNodes.splice(index, 0, childNode);
 
@@ -192,6 +197,11 @@ class ViewNode {
       throw new Error(
         'Can\'t append child, because it already has a different parent.',
       );
+    }
+
+    // remove childNode if exist
+    if (childNode.isMounted) {
+      this.removeChild(childNode);
     }
 
     childNode.parentNode = this;
